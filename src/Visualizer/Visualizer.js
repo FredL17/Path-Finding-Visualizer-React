@@ -3,10 +3,11 @@ import React, { Component } from "react";
 import Node from "./Node/Node";
 import Menu from "./Menu/Menu";
 //  Path finding algorithms.
-import { dijkstra, getNodesInShortestPathOrder } from "../algorithms/dijkstra";
+import dijkstra from "../algorithms/dijkstra";
 import dfs from "../algorithms/dfs";
 import bfs from "../algorithms/bfs";
-// React bootstrap.
+import getNodesInShortestPathOrder from "../algorithms/utility";
+// React Bootstrap.
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -22,6 +23,7 @@ class Visualizer extends Component {
     super(props);
     this.state = {
       grid: [],
+      isAnimationFinished: true,
       mouseIsPressed: false
     };
   }
@@ -55,6 +57,25 @@ class Visualizer extends Component {
     return grid;
   };
 
+  startAnimation = selectedAlgorithm => {
+    this.setState({
+      isAnimationFinished: false
+    });
+    switch (selectedAlgorithm) {
+      case "dijkstra":
+        this.visualizeDijkstra();
+        break;
+      case "dfs":
+        this.visualizeDFS();
+        break;
+      case "bfs":
+        this.visualizeBFS();
+        break;
+      default:
+        break;
+    }
+  };
+
   // Reset the grid.
   resetGrid = () => {
     this.setState(
@@ -69,7 +90,7 @@ class Visualizer extends Component {
     );
   };
 
-  //
+  // When mouse down, user can enter "node-toggle" mode.
   mouseDownHandler = (row, col) => {
     const newGrid = this.getNewGridWithWall(this.state.grid, row, col);
     this.setState({
@@ -78,6 +99,7 @@ class Visualizer extends Component {
     });
   };
 
+  // User can continuously toggle nodes as long as the mouse press button is not released.
   mouseEnterHandler = (row, col) => {
     if (!this.state.mouseIsPressed) return;
     const newGrid = this.getNewGridWithWall(this.state.grid, row, col);
@@ -86,12 +108,26 @@ class Visualizer extends Component {
     });
   };
 
+  // When mouse up, quit the "node-toggle" mode.
   mouseUpHandler = () => {
     this.setState({
       mouseIsPressed: false
     });
   };
 
+  // Generate the new grid with toggled nodes.
+  getNewGridWithWall = (grid, row, col) => {
+    const newGrid = grid.slice();
+    const node = newGrid[row][col];
+    const newNode = {
+      ...node,
+      isWall: !node.isWall
+    };
+    newGrid[row][col] = newNode;
+    return newGrid;
+  };
+
+  // Animate Dijkstra's algorithm.
   animateDijkstra = (visitedNodesInOrder, nodesInShortestPathOrder) => {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
@@ -108,27 +144,7 @@ class Visualizer extends Component {
     }
   };
 
-  animateShortestPath = nodesInShortestPathOrder => {
-    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-      setTimeout(() => {
-        const node = nodesInShortestPathOrder[i];
-        document.getElementById(`${node.row}-${node.col}`).className =
-          "node nodeShortestPath";
-      }, 50 * i);
-    }
-  };
-
-  getNewGridWithWall = (grid, row, col) => {
-    const newGrid = grid.slice();
-    const node = newGrid[row][col];
-    const newNode = {
-      ...node,
-      isWall: !node.isWall
-    };
-    newGrid[row][col] = newNode;
-    return newGrid;
-  };
-
+  // Wrapper method for animateDijkstra().
   visualizeDijkstra = () => {
     const grid = this.state.grid;
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
@@ -138,14 +154,7 @@ class Visualizer extends Component {
     this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
   };
 
-  visualizeDFS = () => {
-    const grid = this.state.grid;
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    const visitedNodesInOrder = dfs(grid, startNode, finishNode);
-    this.animateDFS(visitedNodesInOrder);
-  };
-
+  // Animate Depth-first Search.
   animateDFS = visitedNodesInOrder => {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
@@ -162,20 +171,21 @@ class Visualizer extends Component {
     }
   };
 
-  visualizeBFS = () => {
+  // Wrapper method for animateDFS().
+  visualizeDFS = () => {
     const grid = this.state.grid;
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    const visitedNodesInOrder = bfs(grid, startNode, finishNode);
-    const nodesInPathOrder = getNodesInShortestPathOrder(finishNode);
-    this.animateBFS(visitedNodesInOrder, nodesInPathOrder);
+    const visitedNodesInOrder = dfs(grid, startNode, finishNode);
+    this.animateDFS(visitedNodesInOrder);
   };
 
-  animateBFS = (visitedNodesInOrder, nodesInPathOrder) => {
+  // Animate Breadth-first Search.
+  animateBFS = (visitedNodesInOrder, nodesInShortestPathOrder) => {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
-          this.animateShortestPath(nodesInPathOrder);
+          this.animateShortestPath(nodesInShortestPathOrder);
         }, 10 * i);
         return;
       }
@@ -184,6 +194,32 @@ class Visualizer extends Component {
         document.getElementById(`${node.row}-${node.col}`).className =
           "node nodeVisited";
       }, 10 * i);
+    }
+  };
+
+  // Wrapper method for animateBFS().
+  visualizeBFS = () => {
+    const grid = this.state.grid;
+    const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const visitedNodesInOrder = bfs(grid, startNode, finishNode);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+    this.animateBFS(visitedNodesInOrder, nodesInShortestPathOrder);
+  };
+
+  // Animate the shortest path from the start node to the finish node.
+  animateShortestPath = nodesInShortestPathOrder => {
+    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+      setTimeout(() => {
+        const node = nodesInShortestPathOrder[i];
+        document.getElementById(`${node.row}-${node.col}`).className =
+          "node nodeShortestPath";
+        if (i === nodesInShortestPathOrder.length - 1) {
+          this.setState({
+            isAnimationFinished: true
+          });
+        }
+      }, 50 * i);
     }
   };
 
@@ -196,7 +232,7 @@ class Visualizer extends Component {
               return (
                 <Row
                   key={rowIndex}
-                  className="d-flex w-100 justify-content-center"
+                  className="d-flex w-100 justify-content-center mx-auto"
                 >
                   {row.map(node => {
                     return (
@@ -226,7 +262,11 @@ class Visualizer extends Component {
             })}
           </Col>
           <Col className="mw-25 my-3" sm={4}>
-            <Menu reset={this.resetGrid} start={this.visualizeDijkstra}></Menu>
+            <Menu
+              reset={this.resetGrid}
+              start={this.startAnimation}
+              isAnimationFinished={this.state.isAnimationFinished}
+            ></Menu>
           </Col>
         </Row>
       </Container>

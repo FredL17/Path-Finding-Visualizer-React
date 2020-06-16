@@ -57,16 +57,4 @@ const getAllNodes = grid => {
   return nodes;
 };
 
-// Backtracks from the finish node to find the shortest path.
-const getNodesInShortestPathOrder = finishNode => {
-  console.log(finishNode.previousNode);
-  const nodesInShortestPathOrder = [];
-  let currentNode = finishNode;
-  while (currentNode !== null) {
-    nodesInShortestPathOrder.unshift(currentNode);
-    currentNode = currentNode.previousNode;
-  }
-  return nodesInShortestPathOrder;
-};
-
-export { dijkstra, getNodesInShortestPathOrder };
+export default dijkstra;

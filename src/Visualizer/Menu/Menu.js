@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+// React Bootstrap.
 import Row from "react-bootstrap/Row";
-
 // Material UI.
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
@@ -23,23 +22,35 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Menu(props) {
-  const classes = useStyles();
+  // Manage the selected algorithm.
+  const [selectedAlgorithm, setAlgo] = useState("dijkstra");
 
+  // When the selected algorithm changed, clear the board and update the state.
+  const onChangeAlgorithm = (reset, event) => {
+    setAlgo(event.target.value);
+    reset();
+  };
+  const classes = useStyles();
   return (
     <Card className="text-center mx-auto w-75">
       <CardContent>
         <Typography>Menu</Typography>
         <Row className="d-flex justify-content-center my-3">
           <FormControl className={classes.formControl}>
-            <Select defaultValue={"dijkstra"}>
+            <Select
+              disabled={!props.isAnimationFinished}
+              defaultValue={"dijkstra"}
+              onChange={onChangeAlgorithm.bind(this, props.reset)}
+            >
               <MenuItem value={"dijkstra"}>Dijkstra's Algorithm</MenuItem>
-              <MenuItem value={"dfs"}>Depth First Search</MenuItem>
-              <MenuItem value={"bfs"}>Breath First Search</MenuItem>
+              <MenuItem value={"dfs"}>Depth-first Search</MenuItem>
+              <MenuItem value={"bfs"}>Breadth-first Search</MenuItem>
             </Select>
           </FormControl>
         </Row>
         <Row className="d-flex justify-content-center my-3">
           <Button
+            disabled={!props.isAnimationFinished}
             className="w-50"
             variant="contained"
             color="primary"
@@ -50,10 +61,11 @@ function Menu(props) {
         </Row>
         <Row className="d-flex justify-content-center my-3">
           <Button
+            disabled={!props.isAnimationFinished}
             className="w-50"
             variant="contained"
             color="primary"
-            onClick={props.start}
+            onClick={props.start.bind(this, selectedAlgorithm)}
           >
             Start
           </Button>
