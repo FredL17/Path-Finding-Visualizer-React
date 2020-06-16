@@ -1,3 +1,5 @@
-const wrapper = props => props.children;
+function Wrapper(props) {
+  return props.children;
+}
 
-export default wrapper;
+export default Wrapper;

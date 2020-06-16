@@ -1,19 +1,19 @@
 .node {
-  width: 20px;
-  height: 20px;
+  width: 3%;
+  padding-top: 3%;
   outline: 1px solid rgb(175, 216, 248);
   display: inline-block;
 }
 
-.node-finish {
+.nodeFinish {
   background-color: red;
 }
 
-.node-start {
+.nodeStart {
   background-color: green;
 }
 
-.node-visited {
+.nodeVisited {
   animation-name: visitedAnimation;
   animation-duration: 1.5s;
   animation-timing-function: ease-out;
@@ -46,11 +46,11 @@
   }
 }
 
-.node-wall {
+.nodeWall {
   background-color: rgb(12, 53, 71);
 }
 
-.node-shortest-path {
+.nodeShortestPath {
   animation-name: shortestPath;
   animation-duration: 1.5s;
   animation-timing-function: ease-out;

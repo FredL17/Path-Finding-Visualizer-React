@@ -1,8 +1,10 @@
 import React from "react";
+// React bootstrap.
 import Navbar from "react-bootstrap/Navbar";
-import logo from "../assets/images/favicon-32x32.png";
+// Image assets.
+import logo from "../assets/images/logo.png";
 
-const header = props => {
+function Header(props) {
   return (
     <Navbar bg="dark" variant="dark">
       <Navbar.Brand href="">
@@ -17,6 +19,6 @@ const header = props => {
       </Navbar.Brand>
     </Navbar>
   );
-};
+}
 
-export default header;
+export default Header;
