@@ -59,6 +59,7 @@ const getAllNodes = grid => {
 
 // Backtracks from the finish node to find the shortest path.
 const getNodesInShortestPathOrder = finishNode => {
+  console.log(finishNode.previousNode);
   const nodesInShortestPathOrder = [];
   let currentNode = finishNode;
   while (currentNode !== null) {
