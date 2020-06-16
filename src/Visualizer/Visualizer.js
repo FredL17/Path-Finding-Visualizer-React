@@ -4,6 +4,7 @@ import Node from "./Node/Node";
 import Menu from "./Menu/Menu";
 //  Path finding algorithms.
 import { dijkstra, getNodesInShortestPathOrder } from "../algorithms/dijkstra";
+import dfs from "../algorithms/dfs";
 // React bootstrap.
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -134,7 +135,30 @@ class Visualizer extends Component {
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
     this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
-    console.log(this.state.grid);
+  };
+
+  visualizeDFS = () => {
+    const grid = this.state.grid;
+    const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const visitedNodesInOrder = dfs(grid, startNode, finishNode);
+    this.animateDFS(visitedNodesInOrder);
+  };
+
+  animateDFS = visitedNodesInOrder => {
+    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      if (i === visitedNodesInOrder.length) {
+        setTimeout(() => {
+          this.animateShortestPath(visitedNodesInOrder);
+        }, 10 * i);
+        return;
+      }
+      setTimeout(() => {
+        const node = visitedNodesInOrder[i];
+        document.getElementById(`${node.row}-${node.col}`).className =
+          "node nodeVisited";
+      }, 10 * i);
+    }
   };
 
   render() {
@@ -176,7 +200,7 @@ class Visualizer extends Component {
             })}
           </Col>
           <Col className="mw-25 my-3" sm={4}>
-            <Menu reset={this.resetGrid} start={this.visualizeDijkstra}></Menu>
+            <Menu reset={this.resetGrid} start={this.visualizeDFS}></Menu>
           </Col>
         </Row>
       </Container>
