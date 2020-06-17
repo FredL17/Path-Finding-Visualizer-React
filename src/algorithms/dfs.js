@@ -7,6 +7,7 @@ const dfs = (grid, startNode, finishNode) => {
     // If we encounter a wall, we skip it.
     if (currentNode.isWall) continue;
     currentNode.isVisited = true;
+    currentNode.onShortestPath = true;
     visitedNodesInOrder.push(currentNode);
     // If we have reached the destination, stop searching.
     if (currentNode === finishNode) return visitedNodesInOrder;

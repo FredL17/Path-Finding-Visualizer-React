@@ -4,6 +4,7 @@ const getNodesInShortestPathOrder = finishNode => {
   let currentNode = finishNode;
   while (currentNode !== null) {
     nodesInShortestPathOrder.unshift(currentNode);
+    currentNode.onShortestPath = true;
     currentNode = currentNode.previousNode;
   }
   return nodesInShortestPathOrder;

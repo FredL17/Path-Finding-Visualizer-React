@@ -33,8 +33,9 @@ class Visualizer extends Component {
 
   // Initialize the grid after the view is rendered.
   componentDidMount() {
+    const initialGrid = this.getInitialGrid();
     this.setState({
-      grid: this.getInitialGrid()
+      grid: initialGrid
     });
   }
 
@@ -56,7 +57,8 @@ class Visualizer extends Component {
           distance: Infinity,
           isVisited: false,
           isWall: false,
-          previousNode: null
+          previousNode: null,
+          onShortestPath: false
         });
       }
       grid.push(currentRow);
@@ -84,38 +86,32 @@ class Visualizer extends Component {
     }
   };
 
-  // Set coordinates for the start node.
-  setStartNode = (newRow, newCol) => {
-    this.setState({
-      startNode: {
-        row: newRow,
-        col: newCol
-      }
-    });
-  };
+  // // Set coordinates for the start node.
+  // setStartNode = (newRow, newCol) => {
+  //   this.setState({
+  //     startNode: {
+  //       row: newRow,
+  //       col: newCol
+  //     }
+  //   });
+  // };
 
-  // Set coordinates for the finish node.
-  setFinishNode = (newRow, newCol) => {
-    this.setState({
-      finishNode: {
-        row: newRow,
-        col: newCol
-      }
-    });
-  };
+  // // Set coordinates for the finish node.
+  // setFinishNode = (newRow, newCol) => {
+  //   this.setState({
+  //     finishNode: {
+  //       row: newRow,
+  //       col: newCol
+  //     }
+  //   });
+  // };
 
   // Reset the grid.
   resetGrid = () => {
-    this.setState(
-      {
-        grid: []
-      },
-      () => {
-        this.setState({
-          grid: this.getInitialGrid()
-        });
-      }
-    );
+    const newGrid = this.getInitialGrid();
+    this.setState({
+      grid: newGrid
+    });
   };
 
   // When mouse down, user can enter "node-toggle" mode.
@@ -222,6 +218,8 @@ class Visualizer extends Component {
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
           this.animateShortestPath(nodesInShortestPathOrder);
+          console.log("state after animation");
+          console.log(this.state.grid);
         }, 10 * i);
         return;
       }
@@ -280,6 +278,7 @@ class Visualizer extends Component {
                         isStart={node.isStart}
                         isFinish={node.isFinish}
                         isWall={node.isWall}
+                        isVisited={node.isVisited}
                         onMouseDown={this.mouseDownHandler.bind(
                           this,
                           node.row,
@@ -291,6 +290,8 @@ class Visualizer extends Component {
                           node.col
                         )}
                         onMouseUp={this.mouseUpHandler}
+                        isAnimationFinished={this.state.isAnimationFinished}
+                        onShortestPath={node.onShortestPath}
                       ></Node>
                     );
                   })}
@@ -302,6 +303,10 @@ class Visualizer extends Component {
             <Menu
               reset={this.resetGrid}
               start={this.startAnimation}
+              // setStartNode={this.setStartNode}
+              // setFinishNode={this.setFinishNode}
+              // startNode={this.state.startNode}
+              // finishNode={this.state.finishNode}
               isAnimationFinished={this.state.isAnimationFinished}
             ></Menu>
           </Col>
