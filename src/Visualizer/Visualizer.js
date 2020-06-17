@@ -12,17 +12,20 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 
-const START_NODE_ROW = 10;
-const START_NODE_COL = 10;
-const FINISH_NODE_ROW = 15;
-const FINISH_NODE_COL = 25;
-
 class Visualizer extends Component {
   // Constructor method.
   constructor(props) {
     super(props);
     this.state = {
       grid: [],
+      startNode: {
+        row: 10,
+        col: 10
+      },
+      finishNode: {
+        row: 15,
+        col: 25
+      },
       isAnimationFinished: true,
       mouseIsPressed: false
     };
@@ -44,8 +47,12 @@ class Visualizer extends Component {
         currentRow.push({
           row: row,
           col: col,
-          isStart: row === START_NODE_ROW && col === START_NODE_COL,
-          isFinish: row === FINISH_NODE_ROW && col === FINISH_NODE_COL,
+          isStart:
+            row === this.state.startNode.row &&
+            col === this.state.startNode.col,
+          isFinish:
+            row === this.state.finishNode.row &&
+            col === this.state.finishNode.col,
           distance: Infinity,
           isVisited: false,
           isWall: false,
@@ -57,6 +64,7 @@ class Visualizer extends Component {
     return grid;
   };
 
+  // Start the animation.
   startAnimation = selectedAlgorithm => {
     this.setState({
       isAnimationFinished: false
@@ -74,6 +82,26 @@ class Visualizer extends Component {
       default:
         break;
     }
+  };
+
+  // Set coordinates for the start node.
+  setStartNode = (newRow, newCol) => {
+    this.setState({
+      startNode: {
+        row: newRow,
+        col: newCol
+      }
+    });
+  };
+
+  // Set coordinates for the finish node.
+  setFinishNode = (newRow, newCol) => {
+    this.setState({
+      finishNode: {
+        row: newRow,
+        col: newCol
+      }
+    });
   };
 
   // Reset the grid.
@@ -117,6 +145,12 @@ class Visualizer extends Component {
 
   // Generate the new grid with toggled nodes.
   getNewGridWithWall = (grid, row, col) => {
+    // Start node and finish node can't be toggled.
+    if (row === this.state.startNode.row && col === this.state.startNode.col)
+      return grid;
+    if (row === this.state.finishNode.row && col === this.state.finishNode.col)
+      return grid;
+
     const newGrid = grid.slice();
     const node = newGrid[row][col];
     const newNode = {
@@ -147,8 +181,9 @@ class Visualizer extends Component {
   // Wrapper method for animateDijkstra().
   visualizeDijkstra = () => {
     const grid = this.state.grid;
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const startNode = grid[this.state.startNode.row][this.state.startNode.col];
+    const finishNode =
+      grid[this.state.finishNode.row][this.state.finishNode.col];
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
     this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
@@ -174,8 +209,9 @@ class Visualizer extends Component {
   // Wrapper method for animateDFS().
   visualizeDFS = () => {
     const grid = this.state.grid;
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const startNode = grid[this.state.startNode.row][this.state.startNode.col];
+    const finishNode =
+      grid[this.state.finishNode.row][this.state.finishNode.col];
     const visitedNodesInOrder = dfs(grid, startNode, finishNode);
     this.animateDFS(visitedNodesInOrder);
   };
@@ -200,8 +236,9 @@ class Visualizer extends Component {
   // Wrapper method for animateBFS().
   visualizeBFS = () => {
     const grid = this.state.grid;
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const startNode = grid[this.state.startNode.row][this.state.startNode.col];
+    const finishNode =
+      grid[this.state.finishNode.row][this.state.finishNode.col];
     const visitedNodesInOrder = bfs(grid, startNode, finishNode);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
     this.animateBFS(visitedNodesInOrder, nodesInShortestPathOrder);
