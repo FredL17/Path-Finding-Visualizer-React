@@ -2,6 +2,7 @@ import React, { Component } from "react";
 // Custom components.
 import Node from "./Node/Node";
 import Menu from "./Menu/Menu";
+import GridControls from "./GridControls/GridControls";
 //  Path finding algorithms.
 import dijkstra from "../algorithms/dijkstra";
 import dfs from "../algorithms/dfs";
@@ -19,15 +20,15 @@ class Visualizer extends Component {
     this.state = {
       grid: [],
       startNode: {
-        row: 10,
-        col: 10
+        row: -1,
+        col: -1
       },
       finishNode: {
-        row: 15,
-        col: 25
+        row: -1,
+        col: -1
       },
       isAnimationFinished: true,
-      mouseIsPressed: false
+      selectedSymbol: "start"
     };
   }
 
@@ -48,12 +49,8 @@ class Visualizer extends Component {
         currentRow.push({
           row: row,
           col: col,
-          isStart:
-            row === this.state.startNode.row &&
-            col === this.state.startNode.col,
-          isFinish:
-            row === this.state.finishNode.row &&
-            col === this.state.finishNode.col,
+          isStart: false,
+          isFinish: false,
           distance: Infinity,
           isVisited: false,
           isWall: false,
@@ -86,26 +83,6 @@ class Visualizer extends Component {
     }
   };
 
-  // // Set coordinates for the start node.
-  // setStartNode = (newRow, newCol) => {
-  //   this.setState({
-  //     startNode: {
-  //       row: newRow,
-  //       col: newCol
-  //     }
-  //   });
-  // };
-
-  // // Set coordinates for the finish node.
-  // setFinishNode = (newRow, newCol) => {
-  //   this.setState({
-  //     finishNode: {
-  //       row: newRow,
-  //       col: newCol
-  //     }
-  //   });
-  // };
-
   // Reset the grid.
   resetGrid = () => {
     const newGrid = this.getInitialGrid();
@@ -114,30 +91,57 @@ class Visualizer extends Component {
     });
   };
 
-  // When mouse down, user can enter "node-toggle" mode.
-  mouseDownHandler = (row, col) => {
-    const newGrid = this.getNewGridWithWall(this.state.grid, row, col);
+  changeSymbolHandler = event => {
     this.setState({
-      grid: newGrid,
-      mouseIsPressed: true
+      selectedSymbol: event.target.value
     });
   };
 
-  // User can continuously toggle nodes as long as the mouse press button is not released.
-  mouseEnterHandler = (row, col) => {
-    if (!this.state.mouseIsPressed) return;
-    const newGrid = this.getNewGridWithWall(this.state.grid, row, col);
+  nodeToggleHandler = (row, col) => {
+    switch (this.state.selectedSymbol) {
+      case "start":
+        this.startNodeHandler(row, col);
+        break;
+      case "finish":
+        this.finishNodeHandler(row, col);
+        break;
+      case "wall":
+        this.wallNodeHandler(row, col);
+        break;
+      default:
+        break;
+    }
+  };
+
+  startNodeHandler = (newRow, newCol) => {
+    if (
+      this.state.startNode.row === newRow &&
+      this.state.startNode.col === newCol
+    )
+      return;
     this.setState({
-      grid: newGrid
+      startNode: {
+        row: newRow,
+        col: newCol
+      }
     });
   };
 
-  // When mouse up, quit the "node-toggle" mode.
-  mouseUpHandler = () => {
+  finishNodeHandler = (newRow, newCol) => {
+    if (
+      this.state.finishNode.row === newRow &&
+      this.state.finishNode.col === newCol
+    )
+      return;
     this.setState({
-      mouseIsPressed: false
+      finishNode: {
+        row: newRow,
+        col: newCol
+      }
     });
   };
+
+  wallNodeHandler = (newRow, newCol) => {};
 
   // Generate the new grid with toggled nodes.
   getNewGridWithWall = (grid, row, col) => {
@@ -275,23 +279,23 @@ class Visualizer extends Component {
                         key={`${node.row}-${node.col}`}
                         row={node.row}
                         col={node.col}
-                        isStart={node.isStart}
-                        isFinish={node.isFinish}
+                        isStart={
+                          node.row === this.state.startNode.row &&
+                          node.col === this.state.startNode.col
+                        }
+                        isFinish={
+                          node.row === this.state.finishNode.row &&
+                          node.col === this.state.finishNode.col
+                        }
                         isWall={node.isWall}
                         isVisited={node.isVisited}
-                        onMouseDown={this.mouseDownHandler.bind(
-                          this,
-                          node.row,
-                          node.col
-                        )}
-                        onMouseEnter={this.mouseEnterHandler.bind(
-                          this,
-                          node.row,
-                          node.col
-                        )}
-                        onMouseUp={this.mouseUpHandler}
                         isAnimationFinished={this.state.isAnimationFinished}
                         onShortestPath={node.onShortestPath}
+                        toggle={this.nodeToggleHandler.bind(
+                          this,
+                          node.row,
+                          node.col
+                        )}
                       ></Node>
                     );
                   })}
@@ -303,12 +307,12 @@ class Visualizer extends Component {
             <Menu
               reset={this.resetGrid}
               start={this.startAnimation}
-              // setStartNode={this.setStartNode}
-              // setFinishNode={this.setFinishNode}
-              // startNode={this.state.startNode}
-              // finishNode={this.state.finishNode}
               isAnimationFinished={this.state.isAnimationFinished}
             ></Menu>
+            <GridControls
+              changeSymbol={this.changeSymbolHandler}
+              currentSymbol={this.state.selectedSymbol}
+            ></GridControls>
           </Col>
         </Row>
       </Container>

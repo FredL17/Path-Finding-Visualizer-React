@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 // React Bootstrap.
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 // Material UI.
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
@@ -11,7 +10,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -33,10 +31,6 @@ function Menu(props) {
     reset();
   };
 
-  const onChangeSRow = (setStartNode, event) => {
-    setStartNode(event.target.value, props.startNode.col);
-  };
-
   const classes = useStyles();
   return (
     <Card className="text-center mx-auto w-75">
@@ -55,59 +49,6 @@ function Menu(props) {
             </Select>
           </FormControl>
         </Row>
-        {/* <Row className="d-flex justify-content-center my-3">
-          <Col lg={6}>
-            <TextField
-              label="S-row"
-              type="number"
-              InputLabelProps={{
-                shrink: true
-              }}
-              variant="outlined"
-              defaultValue={props.startNode.row}
-              className="my-1"
-              onChange={onChangeSRow.bind(this, props.setStartNode)}
-            />
-          </Col>
-          <Col lg={6}>
-            <TextField
-              label="S-col"
-              type="number"
-              InputLabelProps={{
-                shrink: true
-              }}
-              variant="outlined"
-              defaultValue={props.startNode.col}
-              className="my-1"
-            />
-          </Col>
-        </Row>
-        <Row className="d-flex justify-content-center my-3">
-          <Col lg={6}>
-            <TextField
-              label="F-row"
-              type="number"
-              InputLabelProps={{
-                shrink: true
-              }}
-              variant="outlined"
-              defaultValue={props.finishNode.row}
-              className="my-1"
-            />
-          </Col>
-          <Col lg={6}>
-            <TextField
-              label="F-col"
-              type="number"
-              InputLabelProps={{
-                shrink: true
-              }}
-              variant="outlined"
-              defaultValue={props.finishNode.col}
-              className="my-1"
-            />
-          </Col>
-        </Row> */}
         <Row className="d-flex justify-content-center my-3">
           <Button
             disabled={!props.isAnimationFinished}

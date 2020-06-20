@@ -8,9 +8,6 @@ function Node(props) {
   const isFinish = props.isFinish;
   const isWall = props.isWall;
   const isVisited = props.isVisited;
-  const onMouseDown = props.onMouseDown;
-  const onMouseUp = props.onMouseUp;
-  const onMouseEnter = props.onMouseEnter;
   const isAnimationFinished = props.isAnimationFinished;
   const onShortestPath = props.onShortestPath;
 
@@ -35,9 +32,7 @@ function Node(props) {
     <div
       id={`${row}-${col}`}
       className={classes.join(" ")}
-      onMouseDown={onMouseDown.bind(this, row, col)}
-      onMouseUp={onMouseUp.bind(this, row, col)}
-      onMouseEnter={onMouseEnter.bind(this, row, col)}
+      onClick={props.toggle}
     ></div>
   );
 }

@@ -1,13 +1,12 @@
-import React from "react";
-import Wrapper from "../hoc/Wrapper";
+import React, { Fragment } from "react";
 import Header from "../Header/Header";
 
 function Layout(props) {
   return (
-    <Wrapper>
+    <Fragment>
       <Header></Header>
       {props.children}
-    </Wrapper>
+    </Fragment>
   );
 }
 
