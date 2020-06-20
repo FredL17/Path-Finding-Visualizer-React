@@ -14,7 +14,7 @@ function GridControls(props) {
   return (
     <Card className="text-center mx-auto w-75 my-3">
       <CardContent>
-        <Typography>Grid Controls</Typography>
+        <Typography className="font-weight-bold">Grid Controls</Typography>
         <Row className="d-flex justify-content-center my-3">
           <FormControl component="fieldset">
             <RadioGroup
@@ -28,6 +28,7 @@ function GridControls(props) {
                 control={<Radio />}
                 label="Start Node"
               />
+
               <FormControlLabel
                 value="finish"
                 control={<Radio />}

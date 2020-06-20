@@ -65,6 +65,14 @@ class Visualizer extends Component {
 
   // Start the animation.
   startAnimation = selectedAlgorithm => {
+    // Ensure the start node and the finish node are in the grid.
+    if (
+      this.state.startNode.row === -1 ||
+      this.state.startNode.col === -1 ||
+      this.state.finishNode.row === -1 ||
+      this.state.finishNode.col === -1
+    )
+      return;
     this.setState({
       isAnimationFinished: false
     });
@@ -86,18 +94,37 @@ class Visualizer extends Component {
   // Reset the grid.
   resetGrid = () => {
     const newGrid = this.getInitialGrid();
-    this.setState({
-      grid: newGrid
-    });
+    this.setState(
+      {
+        grid: []
+      },
+      () => {
+        this.setState({
+          grid: newGrid,
+          startNode: {
+            row: -1,
+            col: -1
+          },
+          finishNode: {
+            row: -1,
+            col: -1
+          }
+        });
+      }
+    );
   };
 
+  // Update the selected symbol.
   changeSymbolHandler = event => {
     this.setState({
       selectedSymbol: event.target.value
     });
   };
 
+  // Handle each node differently based on the selected symbol.
   nodeToggleHandler = (row, col) => {
+    // The grid should be untouchable during the animation.
+    if (!this.state.isAnimationFinished) return;
     switch (this.state.selectedSymbol) {
       case "start":
         this.startNodeHandler(row, col);
@@ -113,12 +140,24 @@ class Visualizer extends Component {
     }
   };
 
+  // Start node toggle handler.
   startNodeHandler = (newRow, newCol) => {
+    // If the position is unchanged, return.
     if (
       this.state.startNode.row === newRow &&
       this.state.startNode.col === newCol
     )
       return;
+    // Set the old start node's isStart property back to false.
+    if (this.state.startNode.row !== -1 && this.state.startNode.col !== -1) {
+      const oldStart = this.state.grid[this.state.startNode.row][
+        this.state.startNode.col
+      ];
+      oldStart.isStart = false;
+    }
+    // Set the new start node.
+    const newStart = this.state.grid[newRow][newCol];
+    newStart.isStart = true;
     this.setState({
       startNode: {
         row: newRow,
@@ -127,12 +166,24 @@ class Visualizer extends Component {
     });
   };
 
+  // Finish node toggle handler.
   finishNodeHandler = (newRow, newCol) => {
+    // If the position is unchanged, return.
     if (
       this.state.finishNode.row === newRow &&
       this.state.finishNode.col === newCol
     )
       return;
+    // Set the old finish node's isStart property back to false.
+    if (this.state.finishNode.row !== -1 && this.state.finishNode.col !== -1) {
+      const oldFinish = this.state.grid[this.state.finishNode.row][
+        this.state.finishNode.col
+      ];
+      oldFinish.isFinish = false;
+    }
+    // Set the new finish node.
+    const oldFinish = this.state.grid[newRow][newCol];
+    oldFinish.isFinish = true;
     this.setState({
       finishNode: {
         row: newRow,
@@ -141,24 +192,15 @@ class Visualizer extends Component {
     });
   };
 
-  wallNodeHandler = (newRow, newCol) => {};
-
-  // Generate the new grid with toggled nodes.
-  getNewGridWithWall = (grid, row, col) => {
-    // Start node and finish node can't be toggled.
-    if (row === this.state.startNode.row && col === this.state.startNode.col)
-      return grid;
-    if (row === this.state.finishNode.row && col === this.state.finishNode.col)
-      return grid;
-
-    const newGrid = grid.slice();
-    const node = newGrid[row][col];
-    const newNode = {
-      ...node,
-      isWall: !node.isWall
-    };
-    newGrid[row][col] = newNode;
-    return newGrid;
+  // Wall node toggle handler.
+  wallNodeHandler = (newRow, newCol) => {
+    const node = this.state.grid[newRow][newCol];
+    if (node.isWall) {
+      node.isWall = false;
+    } else {
+      node.isWall = true;
+    }
+    this.forceUpdate();
   };
 
   // Animate Dijkstra's algorithm.
@@ -172,8 +214,13 @@ class Visualizer extends Component {
       }
       setTimeout(() => {
         const node = visitedNodesInOrder[i];
-        document.getElementById(`${node.row}-${node.col}`).className =
-          "node nodeVisited";
+        // The start node and the finish node are in the path,
+        // but they should remain the same styling just for the
+        // path to be clear.
+        if (!node.isStart && !node.isFinish) {
+          document.getElementById(`${node.row}-${node.col}`).className =
+            "node nodeVisited";
+        }
       }, 10 * i);
     }
   };
@@ -192,6 +239,9 @@ class Visualizer extends Component {
   // Animate Depth-first Search.
   animateDFS = visitedNodesInOrder => {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      // Animate the shortestPath.
+      // DFS doesn't guarantee the shortest path,
+      // but here we call the same method just for animation convenience.
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
           this.animateShortestPath(visitedNodesInOrder);
@@ -200,8 +250,13 @@ class Visualizer extends Component {
       }
       setTimeout(() => {
         const node = visitedNodesInOrder[i];
-        document.getElementById(`${node.row}-${node.col}`).className =
-          "node nodeVisited";
+        // The start node and the finish node are in the path,
+        // but they should remain the same styling just for the
+        // path to be clear.
+        if (!node.isStart && !node.isFinish) {
+          document.getElementById(`${node.row}-${node.col}`).className =
+            "node nodeVisited";
+        }
       }, 10 * i);
     }
   };
@@ -219,18 +274,22 @@ class Visualizer extends Component {
   // Animate Breadth-first Search.
   animateBFS = (visitedNodesInOrder, nodesInShortestPathOrder) => {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      // Animate the shortestPath.
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
           this.animateShortestPath(nodesInShortestPathOrder);
-          console.log("state after animation");
-          console.log(this.state.grid);
         }, 10 * i);
         return;
       }
       setTimeout(() => {
         const node = visitedNodesInOrder[i];
-        document.getElementById(`${node.row}-${node.col}`).className =
-          "node nodeVisited";
+        // The start node and the finish node are in the path,
+        // but they should remain the same styling just for the
+        // path to be clear.
+        if (!node.isStart && !node.isFinish) {
+          document.getElementById(`${node.row}-${node.col}`).className =
+            "node nodeVisited";
+        }
       }, 10 * i);
     }
   };
@@ -251,8 +310,11 @@ class Visualizer extends Component {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
       setTimeout(() => {
         const node = nodesInShortestPathOrder[i];
-        document.getElementById(`${node.row}-${node.col}`).className =
-          "node nodeShortestPath";
+        if (!node.isStart && !node.isFinish) {
+          document.getElementById(`${node.row}-${node.col}`).className =
+            "node nodeShortestPath";
+        }
+        // Update the state when animation is finished.
         if (i === nodesInShortestPathOrder.length - 1) {
           this.setState({
             isAnimationFinished: true
@@ -288,9 +350,6 @@ class Visualizer extends Component {
                           node.col === this.state.finishNode.col
                         }
                         isWall={node.isWall}
-                        isVisited={node.isVisited}
-                        isAnimationFinished={this.state.isAnimationFinished}
-                        onShortestPath={node.onShortestPath}
                         toggle={this.nodeToggleHandler.bind(
                           this,
                           node.row,

@@ -35,7 +35,7 @@ function Menu(props) {
   return (
     <Card className="text-center mx-auto w-75">
       <CardContent>
-        <Typography>Menu</Typography>
+        <Typography className="font-weight-bold">Menu</Typography>
         <Row className="d-flex justify-content-center my-3">
           <FormControl className={classes.formControl}>
             <Select

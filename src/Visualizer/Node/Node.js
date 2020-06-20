@@ -7,9 +7,6 @@ function Node(props) {
   const isStart = props.isStart;
   const isFinish = props.isFinish;
   const isWall = props.isWall;
-  const isVisited = props.isVisited;
-  const isAnimationFinished = props.isAnimationFinished;
-  const onShortestPath = props.onShortestPath;
 
   const extraClassName = isFinish
     ? "nodeFinish"
@@ -22,12 +19,7 @@ function Node(props) {
   const classes = [];
   classes.push(extraClassName);
   classes.push("node");
-  if (isVisited && isAnimationFinished) {
-    classes.push("nodeVisited");
-  }
-  if (onShortestPath && isAnimationFinished) {
-    classes.push("nodeShortestPath");
-  }
+
   return (
     <div
       id={`${row}-${col}`}

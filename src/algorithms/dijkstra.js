@@ -1,5 +1,7 @@
 // Dijkstra algorithm.
 const dijkstra = (grid, startNode, finishNode) => {
+  console.log(startNode);
+  console.log(finishNode);
   const visitedNodesInOrder = [];
   startNode.distance = 0;
   const unvisitedNodes = getAllNodes(grid);

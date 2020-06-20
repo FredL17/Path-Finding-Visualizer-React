@@ -1,7 +1,6 @@
 #Path Finding Visualizer
 
-Path Finding Visualizer is a web application that allows users to visualize several
-path finding algorithms.
+Path Finding Visualizer is a web application that allows users to visualize several path finding algorithms.
 
 So far, the application supports the following algorithms:
 
