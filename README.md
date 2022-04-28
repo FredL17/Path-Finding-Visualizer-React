@@ -10,7 +10,7 @@ So far, the application supports the following algorithms:
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-The project is now hosting at [https://feifan17.github.io/Path-Finding-Visualizer-React/](https://feifan17.github.io/Path-Finding-Visualizer-React/).
+The project is now hosting at [https://fredl17.github.io/Path-Finding-Visualizer-React/](https://fredl17.github.io/Path-Finding-Visualizer-React/).
 
 ## Deploy the Project Locally
 
